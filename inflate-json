@@ -1,5 +1,13 @@
 #!/usr/bin/env python
 
+"""inflate-json
+
+Reads JSON objects from a file or from stdin
+and writes them to stdout with indentation added for readability.
+
+Copyright (c) 2020 Rod Hoon
+"""
+
 from __future__ import print_function
 
 import json
@@ -17,6 +25,7 @@ else:
 # http://stackoverflow.com/questions/6886283/how-i-can-i-lazily-read-multiple-json-objects-from-a-file-stream-in-python
 from json.decoder import WHITESPACE
 def iterload(string_or_fp, cls=json.JSONDecoder, **kwargs):
+    """A generator which breaks a file or string into a series of JSON items"""
     if isinstance(string_or_fp, file):
         string = string_or_fp.read()
     else:
@@ -29,7 +38,8 @@ def iterload(string_or_fp, cls=json.JSONDecoder, **kwargs):
         yield obj
         idx = WHITESPACE.match(string, end).end()
 
-def reform_json(f, ordered=False):
+def inflate_json(f, ordered=False):
+    """Adds indentation to JSON objects for readability"""
     if ordered:
         it = iterload(f, object_pairs_hook=OrderedDict)
     else:
@@ -39,9 +49,10 @@ def reform_json(f, ordered=False):
 
 if len(sys.argv) == 1:
     with sys.stdin as f:
-        reform_json(f, ordered)
+        inflate_json(f, ordered)
 else:
     for file_ in sys.argv[1:]:
         with open(file_) as f:
-            reform_json(f, ordered)
+            inflate_json(f, ordered)
 
+# vim: ts=4 sw=4 ai sr et com=
